@@ -181,66 +181,6 @@ export default function ExpertHome() {
                 ))}
               </div>
             </div>
-
-            {/* Earnings Breakdown */}
-            <div className="card">
-              <div className="mb-6">
-                <div className="section-label mb-2">THIS MONTH</div>
-                <h2 className="text-xl font-bold text-gray-900">Earnings Breakdown</h2>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">Paid 1:1 Calls</span>
-                    <span className="text-lg font-bold text-gray-900">${expert.earnings.calls}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="h-2 rounded-full bg-rorange"
-                      style={{
-                        width: `${(expert.earnings.calls / expert.earnings.total) * 100}%`
-                      }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">Transcript Royalties</span>
-                    <span className="text-lg font-bold text-gray-900">${expert.earnings.royalties}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="h-2 rounded-full bg-rorange"
-                      style={{
-                        width: `${(expert.earnings.royalties / expert.earnings.total) * 100}%`
-                      }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">Influencer Campaigns</span>
-                    <span className="text-lg font-bold text-gray-900">${expert.earnings.influencer}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="h-2 rounded-full bg-rorange"
-                      style={{
-                        width: `${(expert.earnings.influencer / expert.earnings.total) * 100}%`
-                      }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
-                  <span className="text-sm font-semibold text-gray-900">Total</span>
-                  <span className="text-2xl font-bold text-gray-900">${expert.earnings.total}</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Right Column - 1/3 width */}
