@@ -161,9 +161,7 @@ export default function PeerConversations() {
                     {message.isAIPrompt ? (
                       /* AI Moderator Message */
                       <div className="max-w-2xl">
-                        <div className="rounded-lg p-4 border border-purple/20" style={{
-                          background: 'linear-gradient(135deg, rgba(87, 70, 178, 0.06) 0%, rgba(255, 73, 44, 0.06) 100%)'
-                        }}>
+                        <div className="rounded-lg p-4 border border-purple-20 bg-gradient-to-br from-purple-10 to-rorange-10">
                           <div className="flex items-center space-x-2 mb-2">
                             <img 
                               src="/ai-sparkle.svg" 
@@ -184,7 +182,7 @@ export default function PeerConversations() {
                           <img
                             src={getAvatarUrl(message.participantName)}
                             alt={message.participantName}
-                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0 mt-0.5"
+                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0 mt-1"
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-baseline space-x-2 mb-1">
@@ -262,7 +260,7 @@ export default function PeerConversations() {
             </div>
 
             {/* Guidelines */}
-            <div className="card" style={{ borderColor: '#B0AFB6' }}>
+            <div className="card border-gray-500">
               <div className="section-label mb-4">Conversation Guidelines</div>
               <ul className="space-y-3 text-sm text-gray-700">
                 <li className="flex items-start">

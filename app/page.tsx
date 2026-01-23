@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Navigation from '@/components/Navigation';
 import { Expert, Opportunity, expertStorage, opportunityStorage, initializeSampleData } from '@/lib/storage';
 import Link from 'next/link';
+import AskExpertAIWidget from '@/components/AskExpertAIWidget';
 
 // Helper function to get real professional photos for experts
 function getAvatarUrl(name: string): string {
@@ -54,7 +55,7 @@ export default function ExpertHome() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" style={{ color: 'rgba(47, 46, 51, 1)' }}>
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-sm">
@@ -91,7 +92,7 @@ export default function ExpertHome() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6" style={{ color: 'rgba(87, 70, 178, 1)' }}>
+          <div className="lg:col-span-2 space-y-6 text-purple">
             {/* Profile Card */}
             <div className="card">
               <div className="flex items-start space-x-4 mb-6">
@@ -196,10 +197,9 @@ export default function ExpertHome() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="h-2 rounded-full"
+                      className="h-2 rounded-full bg-rorange"
                       style={{
-                        width: `${(expert.earnings.calls / expert.earnings.total) * 100}%`,
-                        backgroundColor: 'rgba(255, 73, 44, 1)'
+                        width: `${(expert.earnings.calls / expert.earnings.total) * 100}%`
                       }}
                     ></div>
                   </div>
@@ -212,10 +212,9 @@ export default function ExpertHome() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="h-2 rounded-full"
+                      className="h-2 rounded-full bg-rorange"
                       style={{
-                        width: `${(expert.earnings.royalties / expert.earnings.total) * 100}%`,
-                        backgroundColor: 'rgba(255, 73, 44, 1)'
+                        width: `${(expert.earnings.royalties / expert.earnings.total) * 100}%`
                       }}
                     ></div>
                   </div>
@@ -228,10 +227,9 @@ export default function ExpertHome() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="h-2 rounded-full"
+                      className="h-2 rounded-full bg-rorange"
                       style={{
-                        width: `${(expert.earnings.influencer / expert.earnings.total) * 100}%`,
-                        backgroundColor: 'rgba(255, 73, 44, 1)'
+                        width: `${(expert.earnings.influencer / expert.earnings.total) * 100}%`
                       }}
                     ></div>
                   </div>
@@ -247,25 +245,8 @@ export default function ExpertHome() {
 
           {/* Right Column - 1/3 width */}
           <div className="space-y-6">
-            {/* AI Agent Card */}
-            <div className="card bg-gradient-to-br from-purple/5 to-purple/10 border-purple/20">
-              <div className="mb-4">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Ask Expert AI</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Get instant answers from 5,000+ expert transcripts
-                </p>
-              </div>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Ask a question..."
-                  className="input pr-20"
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-purple-dark transition-colors">
-                  Ask
-                </button>
-              </div>
-            </div>
+            {/* Ask Expert AI Widget */}
+            <AskExpertAIWidget />
 
             {/* Coming Soon Card */}
             <div className="card bg-gray-100 border-gray-300">

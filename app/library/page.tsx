@@ -19,15 +19,28 @@ function getAvatarUrl(name: string): string {
     return expertPhotos[name];
   }
 
-  // Fallback: Use a hash-based approach with professional photos
+  // Array of diverse professional headshot photo IDs
+  const fallbackPhotos = [
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1557862921-37829c790f19?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
+  ];
+
+  // Use a hash-based approach to consistently assign photos
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = ((hash << 5) - hash) + name.charCodeAt(i);
     hash = hash & hash;
   }
-  const seed = Math.abs(hash) % 1000;
-  // Use Unsplash's seed parameter for consistent professional photos
-  return `https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face&seed=${seed}`;
+  const index = Math.abs(hash) % fallbackPhotos.length;
+  return fallbackPhotos[index];
 }
 
 export default function TranscriptLibrary() {

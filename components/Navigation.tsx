@@ -32,6 +32,7 @@ export default function Navigation() {
     { href: '/', label: 'Home' },
     { href: '/library', label: 'Library' },
     { href: '/conversations', label: 'Conversations' },
+    { href: '/ask', label: 'Ask Expert AI' },
   ];
 
   return (
@@ -40,7 +41,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105" style={{ backgroundColor: 'rgba(254, 73, 44, 1)' }}>
+            <div className="w-10 h-10 rounded-lg bg-rorange flex items-center justify-center transition-transform group-hover:scale-105">
               <span className="text-white font-bold text-lg">G2</span>
             </div>
             <div className="flex flex-col">

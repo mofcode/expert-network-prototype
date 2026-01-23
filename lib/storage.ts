@@ -1,4 +1,5 @@
 // Local Storage utilities for Expert Network prototype
+import { sampleTranscripts } from './sample-transcripts';
 
 export interface Expert {
   id: string;
@@ -36,6 +37,13 @@ export interface Transcript {
   tags: string[];
   upvotes: number;
   citations: number;
+  coordinates?: {
+    technical: number;     // -1 (Technical) to 1 (Business)
+    strategic: number;     // -1 (Tactical) to 1 (Strategic)
+  };
+  aiMetadata?: {
+    coordinatesGeneratedAt: string;
+  };
 }
 
 export interface Opportunity {
@@ -135,7 +143,9 @@ export const transcriptStorage = {
   },
   search: (query: string, filters?: { category?: string; role?: string }): Transcript[] => {
     const transcripts = transcriptStorage.getAll();
-    return transcripts.filter(t => {
+    console.log('[transcriptStorage.search] Query:', query, 'Transcripts:', transcripts.length);
+
+    const results = transcripts.filter(t => {
       const matchesQuery = query === '' ||
         t.topic.toLowerCase().includes(query.toLowerCase()) ||
         t.content.toLowerCase().includes(query.toLowerCase()) ||
@@ -144,8 +154,22 @@ export const transcriptStorage = {
       const matchesCategory = !filters?.category || t.category === filters.category;
       const matchesRole = !filters?.role || t.expertRole === filters.role;
 
-      return matchesQuery && matchesCategory && matchesRole;
+      const matches = matchesQuery && matchesCategory && matchesRole;
+
+      if (!matches && query.toLowerCase().includes('crm')) {
+        console.log('[transcriptStorage.search] Testing transcript:', {
+          topic: t.topic,
+          topicMatch: t.topic.toLowerCase().includes(query.toLowerCase()),
+          contentMatch: t.content.toLowerCase().includes(query.toLowerCase()),
+          tagMatch: t.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        });
+      }
+
+      return matches;
     });
+
+    console.log('[transcriptStorage.search] Results:', results.length);
+    return results;
   },
 };
 
@@ -231,9 +255,23 @@ const migrateSarahChenToSarahJames = () => {
 export const initializeSampleData = () => {
   // Run migration first to update existing data
   migrateSarahChenToSarahJames();
-  
-  // Check if data already exists
-  if (expertStorage.getCurrent()) return;
+
+  // Check if data already exists and has the new larger dataset
+  const existingTranscripts = transcriptStorage.getAll();
+  const hasNewDataset = existingTranscripts.length >= 80;
+
+  // Check if any transcripts are missing expert names (old data format)
+  const hasMissingNames = existingTranscripts.some(t => !t.expertName || t.expertName.trim() === '');
+
+  // If expert exists and we have the new dataset and all have names, skip initialization
+  if (expertStorage.getCurrent() && hasNewDataset && !hasMissingNames) return;
+
+  // Otherwise, reinitialize with new data
+  if (hasMissingNames) {
+    console.log('[initializeSampleData] Found transcripts with missing expert names, reinitializing data...');
+  } else {
+    console.log('[initializeSampleData] Initializing with 80+ transcripts...');
+  }
 
   // Sample expert (Sarah - CRM Expert)
   const currentExpert: Expert = {
@@ -260,68 +298,10 @@ export const initializeSampleData = () => {
 
   expertStorage.setCurrent(currentExpert);
 
-  // Sample transcripts
-  const sampleTranscripts: Transcript[] = [
-    {
-      id: 't1',
-      expertId: 'exp-001',
-      expertName: 'Alex Rodriguez',
-      expertRole: 'VP Data Engineering',
-      topic: 'Databricks vs Snowflake: Cost considerations at scale',
-      category: 'Data Infrastructure',
-      date: '2024-12-10',
-      duration: '22 min',
-      content: 'Cost overruns became an issue at 50+ TB scale. We saw Databricks pricing become unpredictable with auto-scaling, while Snowflake offered more consistent per-query costs...',
-      keyInsights: [
-        'Cost overruns at 50+ TB scale',
-        'Auto-scaling pricing unpredictability',
-        'Query-based pricing more transparent'
-      ],
-      tags: ['Databricks', 'Snowflake', 'Cost Management', 'Data Warehouse'],
-      upvotes: 23,
-      citations: 8,
-    },
-    {
-      id: 't2',
-      expertId: 'exp-002',
-      expertName: 'Maria Santos',
-      expertRole: 'VP Marketing',
-      topic: 'Salesforce to HubSpot migration: Common pitfalls',
-      category: 'CRM Systems',
-      date: '2024-11-28',
-      duration: '18 min',
-      content: 'The biggest mistake teams make is underestimating data mapping complexity. Historical data doesn\'t always translate cleanly...',
-      keyInsights: [
-        'Data mapping is more complex than expected',
-        'Custom objects need careful planning',
-        'API limitations can slow migration'
-      ],
-      tags: ['Salesforce', 'HubSpot', 'Migration', 'CRM'],
-      upvotes: 31,
-      citations: 12,
-    },
-    {
-      id: 't3',
-      expertId: 'exp-003',
-      expertName: 'James Kim',
-      expertRole: 'RevOps Director',
-      topic: 'Usage-based pricing strategies for SaaS products',
-      category: 'SaaS Pricing',
-      date: '2024-12-05',
-      duration: '25 min',
-      content: 'Usage-based pricing works best when the value metric directly correlates to customer success. For example, charging per API call makes sense if API usage drives customer ROI...',
-      keyInsights: [
-        'Value metric must align with customer success',
-        'Predictability matters for enterprise buyers',
-        'Hybrid models reduce adoption friction'
-      ],
-      tags: ['Pricing', 'SaaS', 'Usage-based', 'Revenue'],
-      upvotes: 42,
-      citations: 15,
-    },
-  ];
-
+  // Use imported sample transcripts (80+ transcripts from sample-transcripts.ts)
+  console.log('[initializeSampleData] Loading', sampleTranscripts.length, 'transcripts');
   transcriptStorage.setAll(sampleTranscripts);
+  console.log('[initializeSampleData] Transcripts loaded successfully');
 
   // Sample opportunities
   const sampleOpportunities: Opportunity[] = [
