@@ -263,119 +263,139 @@ export const initializeSampleData = () => {
   // Check if any transcripts are missing expert names (old data format)
   const hasMissingNames = existingTranscripts.some(t => !t.expertName || t.expertName.trim() === '');
 
-  // If expert exists and we have the new dataset and all have names, skip initialization
-  if (expertStorage.getCurrent() && hasNewDataset && !hasMissingNames) return;
+  // Check if we have the updated opportunities (should be 4)
+  const existingOpportunities = opportunityStorage.getAll();
+  const hasUpdatedOpportunities = existingOpportunities.length >= 4;
 
-  // Otherwise, reinitialize with new data
-  if (hasMissingNames) {
-    console.log('[initializeSampleData] Found transcripts with missing expert names, reinitializing data...');
-  } else {
-    console.log('[initializeSampleData] Initializing with 80+ transcripts...');
+  // If expert exists and we have the new dataset and all have names, skip transcript initialization
+  const shouldSkipTranscriptInit = expertStorage.getCurrent() && hasNewDataset && !hasMissingNames;
+
+  if (!shouldSkipTranscriptInit) {
+    // Otherwise, reinitialize with new data
+    if (hasMissingNames) {
+      console.log('[initializeSampleData] Found transcripts with missing expert names, reinitializing data...');
+    } else {
+      console.log('[initializeSampleData] Initializing with 80+ transcripts...');
+    }
+
+    // Sample expert (Sarah - CRM Expert)
+    const currentExpert: Expert = {
+      id: 'sarah-1',
+      name: 'Sarah James',
+      role: 'VP Marketing',
+      company: 'TechCorp (500-1000 employees)',
+      expertise: ['CRM Systems', 'Marketing Automation', 'SaaS GTM', 'HubSpot', 'Salesforce'],
+      contributions: 12,
+      badge: 'Active Expert',
+      joinedDate: '2024-09-15',
+      earnings: {
+        calls: 1200,
+        royalties: 340,
+        influencer: 2000,
+        total: 3540,
+      },
+      stats: {
+        transcripts: 12,
+        citations: 47,
+        upvotes: 89,
+      },
+    };
+
+    expertStorage.setCurrent(currentExpert);
+
+    // Use imported sample transcripts (80+ transcripts from sample-transcripts.ts)
+    console.log('[initializeSampleData] Loading', sampleTranscripts.length, 'transcripts');
+    transcriptStorage.setAll(sampleTranscripts);
+    console.log('[initializeSampleData] Transcripts loaded successfully');
   }
 
-  // Sample expert (Sarah - CRM Expert)
-  const currentExpert: Expert = {
-    id: 'sarah-1',
-    name: 'Sarah James',
-    role: 'VP Marketing',
-    company: 'TechCorp (500-1000 employees)',
-    expertise: ['CRM Systems', 'Marketing Automation', 'SaaS GTM', 'HubSpot', 'Salesforce'],
-    contributions: 12,
-    badge: 'Active Expert',
-    joinedDate: '2024-09-15',
-    earnings: {
-      calls: 1200,
-      royalties: 340,
-      influencer: 2000,
-      total: 3540,
-    },
-    stats: {
-      transcripts: 12,
-      citations: 47,
-      upvotes: 89,
-    },
-  };
+  // Update opportunities if needed
+  if (!hasUpdatedOpportunities) {
+    console.log('[initializeSampleData] Updating opportunities to include 4 items...');
+    const sampleOpportunities: Opportunity[] = [
+      {
+        id: 'opp-1',
+        type: 'call',
+        title: 'CRM Migration Strategy Call',
+        description: 'Investor wants to discuss HubSpot vs Salesforce for mid-market companies',
+        payment: 400,
+        status: 'pending',
+      },
+      {
+        id: 'opp-2',
+        type: 'influencer',
+        title: 'HubSpot Academy Video Series',
+        description: 'Record 3 expert videos about marketing automation best practices',
+        payment: 2000,
+        status: 'pending',
+        dueDate: '2025-02-15',
+      },
+      {
+        id: 'opp-3',
+        type: 'call',
+        title: 'SaaS Pricing Workshop',
+        description: 'Consult on pricing strategy for new product launch',
+        payment: 400,
+        status: 'pending',
+      },
+      {
+        id: 'opp-4',
+        type: 'research',
+        title: 'Marketing Automation Survey',
+        description: 'Share insights on email campaign optimization and lead scoring strategies',
+        payment: 150,
+        status: 'pending',
+        dueDate: '2025-02-10',
+      },
+    ];
 
-  expertStorage.setCurrent(currentExpert);
+    opportunityStorage.setAll(sampleOpportunities);
+  }
 
-  // Use imported sample transcripts (80+ transcripts from sample-transcripts.ts)
-  console.log('[initializeSampleData] Loading', sampleTranscripts.length, 'transcripts');
-  transcriptStorage.setAll(sampleTranscripts);
-  console.log('[initializeSampleData] Transcripts loaded successfully');
+  // Initialize conversations if needed
+  if (!shouldSkipTranscriptInit) {
+    const sampleConversations: PeerConversation[] = [
+      {
+        id: 'conv-1',
+        topic: 'How should we price AI features in 2026?',
+        participants: [
+          { id: 'sarah-1', name: 'Sarah James', role: 'VP Marketing', expertise: 'CRM & Marketing Automation' },
+          { id: 'alex-1', name: 'Alex Rodriguez', role: 'RevOps Director', expertise: 'Revenue Operations' },
+          { id: 'maria-1', name: 'Maria Santos', role: 'VP Product', expertise: 'SaaS Product Strategy' },
+        ],
+        messages: [
+          {
+            participantId: 'ai',
+            participantName: 'AI Moderator',
+            message: 'Welcome to today\'s expert conversation on AI feature pricing. Let\'s start with Sarah James - from your marketing perspective, what pricing model do you see working best for AI features?',
+            timestamp: new Date().toISOString(),
+            isAIPrompt: true,
+          },
+          {
+            participantId: 'sarah-1',
+            participantName: 'Sarah James',
+            message: 'I think usage-based pricing makes the most sense for AI features because customers can start small and scale as they see value. But you need to make sure the pricing is predictable enough that they don\'t get bill shock.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'alex-1',
+            participantName: 'Alex Rodriguez',
+            message: 'I agree with Sarah James on predictability. We\'ve seen customers hesitate on pure consumption models. What about a hybrid - base fee for access plus usage tiers?',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'ai',
+            participantName: 'AI Moderator',
+            message: 'Maria, you mentioned hybrid models. Can you share more about what you\'ve seen work in your experience?',
+            timestamp: new Date().toISOString(),
+            isAIPrompt: true,
+          },
+        ],
+        status: 'active',
+        willBePublished: true,
+      },
+    ];
 
-  // Sample opportunities
-  const sampleOpportunities: Opportunity[] = [
-    {
-      id: 'opp-1',
-      type: 'call',
-      title: 'CRM Migration Strategy Call',
-      description: 'Investor wants to discuss HubSpot vs Salesforce for mid-market companies',
-      payment: 400,
-      status: 'pending',
-    },
-    {
-      id: 'opp-2',
-      type: 'influencer',
-      title: 'HubSpot Academy Video Series',
-      description: 'Record 3 expert videos about marketing automation best practices',
-      payment: 2000,
-      status: 'pending',
-      dueDate: '2025-02-15',
-    },
-    {
-      id: 'opp-3',
-      type: 'call',
-      title: 'SaaS Pricing Workshop',
-      description: 'Consult on pricing strategy for new product launch',
-      payment: 400,
-      status: 'pending',
-    },
-  ];
-
-  opportunityStorage.setAll(sampleOpportunities);
-
-  // Sample peer conversation
-  const sampleConversations: PeerConversation[] = [
-    {
-      id: 'conv-1',
-      topic: 'How should we price AI features in 2026?',
-      participants: [
-        { id: 'sarah-1', name: 'Sarah James', role: 'VP Marketing', expertise: 'CRM & Marketing Automation' },
-        { id: 'alex-1', name: 'Alex Rodriguez', role: 'RevOps Director', expertise: 'Revenue Operations' },
-        { id: 'maria-1', name: 'Maria Santos', role: 'VP Product', expertise: 'SaaS Product Strategy' },
-      ],
-      messages: [
-        {
-          participantId: 'ai',
-          participantName: 'AI Moderator',
-          message: 'Welcome to today\'s expert conversation on AI feature pricing. Let\'s start with Sarah James - from your marketing perspective, what pricing model do you see working best for AI features?',
-          timestamp: new Date().toISOString(),
-          isAIPrompt: true,
-        },
-        {
-          participantId: 'sarah-1',
-          participantName: 'Sarah James',
-          message: 'I think usage-based pricing makes the most sense for AI features because customers can start small and scale as they see value. But you need to make sure the pricing is predictable enough that they don\'t get bill shock.',
-          timestamp: new Date().toISOString(),
-        },
-        {
-          participantId: 'alex-1',
-          participantName: 'Alex Rodriguez',
-          message: 'I agree with Sarah James on predictability. We\'ve seen customers hesitate on pure consumption models. What about a hybrid - base fee for access plus usage tiers?',
-          timestamp: new Date().toISOString(),
-        },
-        {
-          participantId: 'ai',
-          participantName: 'AI Moderator',
-          message: 'Maria, you mentioned hybrid models. Can you share more about what you\'ve seen work in your experience?',
-          timestamp: new Date().toISOString(),
-          isAIPrompt: true,
-        },
-      ],
-      status: 'active',
-      willBePublished: true,
-    },
-  ];
-
-  conversationStorage.setAll(sampleConversations);
+    conversationStorage.setAll(sampleConversations);
+  }
 };

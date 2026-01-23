@@ -351,6 +351,7 @@ export default function AskExpertAI({ initialQuery = '' }: AskExpertAIProps) {
         <AISearchInput
           onSearch={handleSearch}
           disabled={status === 'searching' || status === 'synthesizing'}
+          initialValue={initialQuery}
         />
 
         {/* Status indicator */}

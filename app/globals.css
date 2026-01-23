@@ -86,7 +86,9 @@
   }
 
   .badge-primary {
-    @apply bg-rorange text-white px-3 py-2 rounded text-sm font-medium;
+    @apply px-3 py-2 rounded text-sm font-medium;
+    background-color: #ffd7d1; /* bg-brand-40 from design tokens */
+    color: #ff492c; /* text-brand from design tokens */
   }
 
   .badge-secondary {

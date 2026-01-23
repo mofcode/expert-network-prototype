@@ -7,14 +7,16 @@ interface AISearchInputProps {
   onSearch: (query: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  initialValue?: string;
 }
 
 export default function AISearchInput({
   onSearch,
   disabled = false,
-  placeholder = "Ask about expert insights..."
+  placeholder = "Ask about expert insights...",
+  initialValue = ''
 }: AISearchInputProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialValue);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
