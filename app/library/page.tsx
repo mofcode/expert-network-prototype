@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Navigation from '@/components/Navigation';
 import { Transcript, transcriptStorage, initializeSampleData } from '@/lib/storage';
+import TranscriptModal from '@/components/TranscriptModal';
+import UserProfileModal from '@/components/UserProfileModal';
 
 // Helper function to get real professional photos for experts
 function getAvatarUrl(name: string): string {
@@ -43,6 +45,31 @@ function getAvatarUrl(name: string): string {
   return fallbackPhotos[index];
 }
 
+// Helper to create user profile from expert name and role
+function getUserProfile(name: string, role: string) {
+  // Default expertise by role type
+  const expertiseMap: Record<string, string[]> = {
+    'VP Marketing': ['Marketing Strategy', 'Brand Management', 'GTM Strategy', 'Content Marketing'],
+    'CTO': ['Technology Strategy', 'System Architecture', 'Engineering Leadership', 'Cloud Infrastructure'],
+    'VP Sales': ['Sales Strategy', 'Enterprise Sales', 'Revenue Operations', 'Team Leadership'],
+    'CFO': ['Financial Planning', 'Corporate Finance', 'Strategic Planning', 'Risk Management'],
+    'Product Manager': ['Product Strategy', 'Roadmap Planning', 'User Research', 'Data Analysis'],
+    'Engineering Manager': ['Team Management', 'Technical Leadership', 'Agile Development', 'Hiring'],
+  };
+
+  // Get expertise based on role, or use generic expertise
+  let expertise = expertiseMap[role] || ['Industry Expertise', 'Strategic Planning', 'Best Practices', 'Innovation'];
+
+  return {
+    name,
+    role,
+    company: 'Enterprise Tech Company',
+    expertise,
+    badge: 'Active Expert',
+    avatarUrl: getAvatarUrl(name),
+  };
+}
+
 export default function TranscriptLibrary() {
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);
   const [filteredTranscripts, setFilteredTranscripts] = useState<Transcript[]>([]);
@@ -50,6 +77,9 @@ export default function TranscriptLibrary() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<string>('');
   const [selectedTranscript, setSelectedTranscript] = useState<Transcript | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUserProfile, setSelectedUserProfile] = useState<ReturnType<typeof getUserProfile> | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -106,17 +136,19 @@ export default function TranscriptLibrary() {
         <div className="card mb-8">
           <div className="grid grid-cols-1 gap-4">
             {/* Search */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Search Transcripts
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Salesforce migration, pricing strategy, data warehouse..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="input"
-              />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Search Transcripts
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Salesforce migration, pricing strategy, data warehouse..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input"
+                />
+              </div>
             </div>
 
             {/* Filters Row */}
@@ -195,208 +227,120 @@ export default function TranscriptLibrary() {
         </div>
 
         {/* Results Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Transcript List */}
-          <div className="space-y-4">
-            {filteredTranscripts.length === 0 ? (
-              <div className="card text-center py-16">
-                <div className="mb-4 flex justify-center">
-                  <span className="material-symbols-outlined text-6xl text-gray-400">search</span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">No transcripts found</h3>
-                <p className="text-sm text-gray-600 mb-6">Try adjusting your search or filters</p>
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('');
-                    setSelectedRole('');
-                  }}
-                  className="btn-primary"
-                >
-                  View All Transcripts
-                </button>
-              </div>
-            ) : (
-              filteredTranscripts.map((transcript) => (
-                <div
-                  key={transcript.id}
-                  onClick={() => setSelectedTranscript(transcript)}
-                  className={`card cursor-pointer transition-all ${
-                    selectedTranscript?.id === transcript.id
-                      ? 'active shadow-md'
-                      : 'hover:shadow-md'
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="badge-purple">
-                      {transcript.category}
-                    </span>
-                    <span className="text-xs text-gray-500">{transcript.date}</span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-purple transition-colors">
-                    {transcript.topic}
-                  </h3>
-
-                  <div className="flex items-center space-x-3 mb-3">
-                    <img
-                      src={getAvatarUrl(transcript.expertName)}
-                      alt={transcript.expertName}
-                      className="w-8 h-8 rounded-lg object-cover"
-                    />
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{transcript.expertName}</div>
-                      <div className="text-xs text-gray-600">{transcript.expertRole}</div>
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                    {transcript.content}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {transcript.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="badge-outline text-xs">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="pt-3 border-t border-gray-200 flex items-center justify-between text-xs text-gray-600">
-                    <div className="flex items-center space-x-4">
-                      <span className="flex items-center space-x-1">
-                        <span className="material-symbols-outlined text-base">thumb_up</span>
-                        <span className="font-medium">{transcript.upvotes}</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <span className="material-symbols-outlined text-base">description</span>
-                        <span className="font-medium">{transcript.citations}</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <span className="material-symbols-outlined text-base">schedule</span>
-                        <span>{transcript.duration}</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+        {filteredTranscripts.length === 0 ? (
+          <div className="card text-center py-16">
+            <div className="mb-4 flex justify-center">
+              <span className="material-symbols-outlined text-6xl text-gray-400">search</span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No transcripts found</h3>
+            <p className="text-sm text-gray-600 mb-6">Try adjusting your search or filters</p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('');
+                setSelectedRole('');
+              }}
+              className="btn-primary"
+            >
+              View All Transcripts
+            </button>
           </div>
-
-          {/* Transcript Detail Panel */}
-          <div className="lg:sticky lg:top-8 lg:h-[calc(100vh-120px)] overflow-y-auto">
-            {selectedTranscript ? (
-              <div className="card">
-                <div className="flex items-start justify-between mb-4">
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredTranscripts.map((transcript) => (
+              <div
+                key={transcript.id}
+                onClick={() => {
+                  setSelectedTranscript(transcript);
+                  setIsModalOpen(true);
+                }}
+                className="card cursor-pointer transition-all hover:shadow-md"
+              >
+                <div className="flex items-start justify-between mb-3">
                   <span className="badge-purple">
-                    {selectedTranscript.category}
+                    {transcript.category}
                   </span>
-                  <button
-                    onClick={() => setSelectedTranscript(null)}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
-                    <span className="material-symbols-outlined text-xl">close</span>
-                  </button>
+                  <span className="text-xs text-gray-500">{transcript.date}</span>
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  {selectedTranscript.topic}
-                </h2>
+                <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-purple transition-colors">
+                  {transcript.topic}
+                </h3>
 
-                <div className="flex items-center space-x-3 mb-4 pb-4 border-b border-gray-200">
+                <div className="flex items-center space-x-3 mb-3">
                   <img
-                    src={getAvatarUrl(selectedTranscript.expertName)}
-                    alt={selectedTranscript.expertName}
-                    className="w-12 h-12 rounded-xl object-cover"
+                    src={getAvatarUrl(transcript.expertName)}
+                    alt={transcript.expertName}
+                    className="w-8 h-8 rounded-lg object-cover cursor-pointer hover:ring-2 hover:ring-purple transition-all"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedUserProfile(getUserProfile(transcript.expertName, transcript.expertRole));
+                      setIsProfileModalOpen(true);
+                    }}
                   />
                   <div>
-                    <div className="text-base font-bold text-gray-900">{selectedTranscript.expertName}</div>
-                    <div className="text-sm text-gray-600">{selectedTranscript.expertRole}</div>
+                    <div className="text-sm font-medium text-gray-900">{transcript.expertName}</div>
+                    <div className="text-xs text-gray-600">{transcript.expertRole}</div>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-4 text-xs text-gray-600 mb-6">
-                  <span className="flex items-center space-x-1">
-                    <span className="material-symbols-outlined text-base">calendar_today</span>
-                    <span>{selectedTranscript.date}</span>
-                  </span>
-                  <span className="flex items-center space-x-1">
-                    <span className="material-symbols-outlined text-base">schedule</span>
-                    <span>{selectedTranscript.duration}</span>
-                  </span>
-                </div>
-
-                {/* Key Insights */}
-                <div className="mb-6 p-4 bg-yellow/10 rounded-lg border border-yellow/30">
-                  <div className="section-label text-rorange mb-3">KEY INSIGHTS</div>
-                  <ul className="space-y-2">
-                    {selectedTranscript.keyInsights.map((insight, idx) => (
-                      <li key={idx} className="flex items-start text-sm text-gray-900">
-                        <span className="text-rorange font-bold mr-2 flex-shrink-0">•</span>
-                        <span>{insight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* AI Pattern Recognition */}
-                <div className="mb-6 p-4 bg-purple/5 rounded-lg border border-purple/20">
-                  <div className="section-label text-purple mb-2">AI ANALYSIS</div>
-                  <p className="text-sm text-gray-700">
-                    <span className="font-bold text-purple">{selectedTranscript.citations}</span> other experts have mentioned similar patterns in their conversations. This aligns with G2 category data showing increased focus on this topic.
-                  </p>
-                </div>
-
-                {/* Transcript Content */}
-                <div className="mb-6">
-                  <div className="section-label mb-3">FULL TRANSCRIPT</div>
-                  <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                    {selectedTranscript.content}
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div className="mb-6">
-                  <div className="section-label mb-3">TOPICS</div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedTranscript.tags.map((tag) => (
-                      <span key={tag} className="badge-outline">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="pt-6 border-t border-gray-200 space-y-3">
-                  <button className="btn-primary w-full flex items-center justify-center space-x-2">
-                    <span className="material-symbols-outlined text-base">chat</span>
-                    <span>Book Call with Expert - $400</span>
-                  </button>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button className="btn-secondary flex items-center justify-center space-x-2">
-                      <span className="material-symbols-outlined text-base">download</span>
-                      <span>Export</span>
-                    </button>
-                    <button className="btn-outline flex items-center justify-center space-x-2">
-                      <span className="material-symbols-outlined text-base">thumb_up</span>
-                      <span>Upvote ({selectedTranscript.upvotes})</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="card card-no-hover text-center py-16 border-dashed border-2">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  Select a Transcript
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Click any transcript to view full details
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                  {transcript.content}
                 </p>
+
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {transcript.tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="badge-outline text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="pt-3 border-t border-gray-200 flex items-center justify-between text-xs text-gray-600">
+                  <div className="flex items-center space-x-4">
+                    <span className="flex items-center space-x-1">
+                      <span className="material-symbols-outlined text-base">thumb_up</span>
+                      <span className="font-medium">{transcript.upvotes}</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <span className="material-symbols-outlined text-base">description</span>
+                      <span className="font-medium">{transcript.citations}</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <span className="material-symbols-outlined text-base">schedule</span>
+                      <span>{transcript.duration}</span>
+                    </span>
+                  </div>
+                </div>
               </div>
-            )}
+            ))}
           </div>
-        </div>
+        )}
+
+        {/* Transcript Modal */}
+        <TranscriptModal
+          transcript={selectedTranscript}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedTranscript(null);
+          }}
+          getAvatarUrl={getAvatarUrl}
+          onAvatarClick={(name, role) => {
+            setSelectedUserProfile(getUserProfile(name, role));
+            setIsProfileModalOpen(true);
+          }}
+        />
+
+        {/* User Profile Modal */}
+        <UserProfileModal
+          profile={selectedUserProfile}
+          isOpen={isProfileModalOpen}
+          onClose={() => {
+            setIsProfileModalOpen(false);
+            setSelectedUserProfile(null);
+          }}
+        />
       </main>
     </div>
   );

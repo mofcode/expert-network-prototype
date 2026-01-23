@@ -89,7 +89,7 @@ export default function OpportunityModal({
           {opportunity.dueDate && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-900 mb-2">Due Date</h3>
-              <p className="text-gray-700">
+              <p className="text-sm text-gray-700">
                 {new Date(opportunity.dueDate).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',

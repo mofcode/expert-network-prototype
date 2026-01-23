@@ -352,9 +352,8 @@ export const initializeSampleData = () => {
     opportunityStorage.setAll(sampleOpportunities);
   }
 
-  // Initialize conversations if needed
-  if (!shouldSkipTranscriptInit) {
-    const sampleConversations: PeerConversation[] = [
+  // Always update conversations to ensure we have the latest expanded version
+  const sampleConversations: PeerConversation[] = [
       {
         id: 'conv-1',
         topic: 'How should we price AI features in 2026?',
@@ -386,9 +385,96 @@ export const initializeSampleData = () => {
           {
             participantId: 'ai',
             participantName: 'AI Moderator',
-            message: 'Maria, you mentioned hybrid models. Can you share more about what you\'ve seen work in your experience?',
+            message: 'Maria, Alex mentioned hybrid models. Can you share more about what you\'ve seen work in your experience?',
             timestamp: new Date().toISOString(),
             isAIPrompt: true,
+          },
+          {
+            participantId: 'maria-1',
+            participantName: 'Maria Santos',
+            message: 'From a product perspective, we\'ve had success with tiered pricing where the base tier includes limited AI calls per month, then you pay for overages. It gives customers confidence in their monthly spend while allowing flexibility. The key is making the included credits generous enough that most customers stay within them.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'sarah-1',
+            participantName: 'Sarah James',
+            message: 'That\'s a great point, Maria. We\'ve found that when customers understand exactly what they\'re getting - like "1000 AI-powered insights per month" - it\'s much easier to sell than vague consumption pricing. The transparency really helps with adoption.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'ai',
+            participantName: 'AI Moderator',
+            message: 'Alex, from a revenue operations standpoint, how do you handle the forecasting challenges with these hybrid models?',
+            timestamp: new Date().toISOString(),
+            isAIPrompt: true,
+          },
+          {
+            participantId: 'alex-1',
+            participantName: 'Alex Rodriguez',
+            message: 'Forecasting is definitely more complex. We track usage patterns closely and segment customers by their consumption behavior. What we\'ve learned is that about 70% of customers stay within their plan limits, 20% consistently go over, and 10% barely use the feature. That 20% overage group is actually really valuable - they\'re power users who get tons of value.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'maria-1',
+            participantName: 'Maria Santos',
+            message: 'Exactly! Those power users are often your best advocates. We actually created a special "unlimited" tier specifically for them after seeing consistent overage patterns. It converted really well because they knew they needed more than the standard tier but wanted predictable costs.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'sarah-1',
+            participantName: 'Sarah James',
+            message: 'I love that approach. We\'ve also found that AI features work well as add-ons to existing plans. Customers who are already paying $99/month are much more willing to add a $29/month AI package than someone starting from zero. The incremental value is easier to justify.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'ai',
+            participantName: 'AI Moderator',
+            message: 'That\'s an interesting perspective on packaging. How do you all think about competitive positioning when it comes to AI pricing?',
+            timestamp: new Date().toISOString(),
+            isAIPrompt: true,
+          },
+          {
+            participantId: 'alex-1',
+            participantName: 'Alex Rodriguez',
+            message: 'We track competitor pricing religiously. What\'s interesting is that the market hasn\'t standardized yet - some vendors include AI in their base price, others charge separately, and some use credits. There\'s definitely an opportunity to differentiate through pricing model, not just price point.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'maria-1',
+            participantName: 'Maria Santos',
+            message: 'Agreed. We initially tried to undercut competitors on price but found that customers associated lower prices with lower quality AI. We actually raised our prices and positioned as "premium AI" and conversion improved. Sometimes you need to price for perceived value, not just cost.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'sarah-1',
+            participantName: 'Sarah James',
+            message: 'That\'s a crucial lesson. We learned the same thing. The messaging around AI features matters just as much as the pricing. When we emphasized ROI and time savings rather than just "AI-powered," customers were willing to pay significantly more.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'ai',
+            participantName: 'AI Moderator',
+            message: 'This has been a great discussion. Any final thoughts on where you see AI pricing heading in the next 12-18 months?',
+            timestamp: new Date().toISOString(),
+            isAIPrompt: true,
+          },
+          {
+            participantId: 'alex-1',
+            participantName: 'Alex Rodriguez',
+            message: 'I think we\'ll see more standardization around outcome-based pricing - pay for results rather than API calls. Like "pay per insight generated" rather than "pay per 1000 tokens." It\'s harder to implement but much easier for customers to understand value.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'maria-1',
+            participantName: 'Maria Santos',
+            message: 'I agree with Alex. We\'re also seeing demand for more flexible pricing - monthly vs annual, different tiers based on team size, enterprise vs SMB models. The key is making it easy for customers to start small and grow. Friction in pricing is one of the biggest conversion killers.',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            participantId: 'sarah-1',
+            participantName: 'Sarah James',
+            message: 'Great points from both of you. I\'d add that transparency will be critical. Customers want to understand not just what they\'re paying for, but how their usage translates to costs. Companies that can clearly explain their AI pricing in simple terms will win in the market.',
+            timestamp: new Date().toISOString(),
           },
         ],
         status: 'active',
@@ -397,5 +483,4 @@ export const initializeSampleData = () => {
     ];
 
     conversationStorage.setAll(sampleConversations);
-  }
 };

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Navigation from '@/components/Navigation';
-import { Expert, Opportunity, expertStorage, opportunityStorage, initializeSampleData } from '@/lib/storage';
+import { Expert, Opportunity, PeerConversation, expertStorage, opportunityStorage, conversationStorage, initializeSampleData } from '@/lib/storage';
 import Link from 'next/link';
 import AskExpertAIWidget from '@/components/AskExpertAIWidget';
 import OpportunityModal from '@/components/OpportunityModal';
@@ -32,6 +32,7 @@ function getAvatarUrl(name: string): string {
 export default function ExpertHome() {
   const [expert, setExpert] = useState<Expert | null>(null);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [activeConversation, setActiveConversation] = useState<PeerConversation | null>(null);
   const [mounted, setMounted] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,6 +42,11 @@ export default function ExpertHome() {
     initializeSampleData();
     setExpert(expertStorage.getCurrent());
     setOpportunities(opportunityStorage.getPending());
+
+    // Get active conversation
+    const conversations = conversationStorage.getAll();
+    const active = conversations.find(c => c.status === 'active');
+    setActiveConversation(active || null);
   }, []);
 
   if (!mounted || !expert) {
@@ -146,6 +152,54 @@ export default function ExpertHome() {
 
           {/* Right Column - 1/3 width */}
           <div className="space-y-6">
+            {/* Active Conversation */}
+            {activeConversation && (
+              <div className="card border-green/30 bg-green/5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green"></span>
+                    </span>
+                    <span className="badge-success text-xs">Active Conversation</span>
+                  </div>
+                </div>
+
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  {activeConversation.topic}
+                </h3>
+
+                <div className="flex items-center space-x-4 mb-4 text-xs text-gray-600">
+                  <span className="flex items-center space-x-1">
+                    <span className="material-symbols-outlined text-base">group</span>
+                    <span>{activeConversation.participants.length} participants</span>
+                  </span>
+                  <span className="flex items-center space-x-1">
+                    <span className="material-symbols-outlined text-base">chat</span>
+                    <span>{activeConversation.messages.length} messages</span>
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center space-x-2">
+                    {activeConversation.participants.slice(0, 3).map((participant) => (
+                      <img
+                        key={participant.id}
+                        src={getAvatarUrl(participant.name)}
+                        alt={participant.name}
+                        className="w-8 h-8 rounded-full object-cover border-2 border-white"
+                        title={participant.name}
+                      />
+                    ))}
+                  </div>
+
+                  <Link href="/conversations" className="btn-primary text-center flex-shrink-0 ml-auto">
+                    Continue Conversation →
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* Ask Expert AI Widget */}
             <AskExpertAIWidget />
 

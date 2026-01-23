@@ -178,30 +178,21 @@ export default function PeerConversations() {
                     ) : (
                       /* Expert Message */
                       <div className="max-w-3xl w-full">
-                        <div className="flex items-start space-x-3">
-                          <img
-                            src={getAvatarUrl(message.participantName)}
-                            alt={message.participantName}
-                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0 mt-1"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-baseline space-x-2 mb-1">
-                              <span className="text-sm font-semibold text-gray-900">
-                                {message.participantName}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                {new Date(message.timestamp).toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </span>
-                            </div>
-                            <div className="bg-white border border-gray-200 rounded-lg p-4">
-                              <p className="text-sm text-gray-700 leading-relaxed">
-                                {message.message}
-                              </p>
-                            </div>
-                          </div>
+                        <div className="flex items-baseline space-x-2 mb-1">
+                          <span className="text-sm font-semibold text-gray-900">
+                            {message.participantName}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(message.timestamp).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <p className="text-sm text-gray-700 leading-relaxed">
+                            {message.message}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -212,33 +203,24 @@ export default function PeerConversations() {
               {/* Message Input */}
               {conversation.status === 'active' && (
                 <div className="pt-6 border-t border-gray-200">
-                  <div className="flex items-start space-x-3">
-                    <img
-                      src={getAvatarUrl('Sarah James')}
-                      alt="Sarah James"
-                      className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                    />
-                    <div className="flex-1">
-                      <textarea
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Share your thoughts, Sarah..."
-                        rows={3}
-                        className="input"
-                      />
-                      <div className="flex items-center justify-between mt-3">
-                        <p className="text-sm text-gray-500">
-                          Be authentic and share real experiences
-                        </p>
-                        <button
-                          onClick={handleSendMessage}
-                          disabled={!newMessage.trim()}
-                          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Send Message
-                        </button>
-                      </div>
-                    </div>
+                  <textarea
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Share your thoughts, Sarah..."
+                    rows={3}
+                    className="input"
+                  />
+                  <div className="flex items-center justify-between mt-3">
+                    <p className="text-sm text-gray-500">
+                      Be authentic and share real experiences
+                    </p>
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={!newMessage.trim()}
+                      className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Send Message
+                    </button>
                   </div>
                 </div>
               )}
