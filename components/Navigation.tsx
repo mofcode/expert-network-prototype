@@ -31,7 +31,6 @@ export default function Navigation() {
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/library', label: 'Library' },
-    { href: '/conversations', label: 'Conversations' },
     { href: '/ask', label: 'Ask Expert AI' },
   ];
 

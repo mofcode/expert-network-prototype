@@ -154,8 +154,8 @@ export default function PeerConversations() {
             </div>
 
             {/* Conversation Thread */}
-            <div className="card">
-              <div className="space-y-6 mb-6">
+            <div className="card relative overflow-hidden">
+              <div className="overflow-y-auto space-y-6 pb-6" style={{ maxHeight: 'calc(100vh - 400px)', minHeight: '500px' }}>
                 {conversation.messages.map((message, idx) => (
                   <div key={idx} className={`flex ${message.isAIPrompt ? 'justify-center' : 'justify-start'}`}>
                     {message.isAIPrompt ? (
@@ -200,9 +200,9 @@ export default function PeerConversations() {
                 ))}
               </div>
 
-              {/* Message Input */}
+              {/* Message Input - Fixed at bottom */}
               {conversation.status === 'active' && (
-                <div className="pt-6 border-t border-gray-200">
+                <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-6 rounded-b-lg">
                   <textarea
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}

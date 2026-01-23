@@ -17,7 +17,7 @@ export default function AskExpertAIWidget() {
   };
 
   return (
-    <div className="card bg-gradient-to-br from-purple/5 to-purple/10 border-purple/20">
+    <div className="card bg-white border-gray-200">
       <div className="mb-4">
         <div className="flex items-center gap-1 mb-2">
           <SparkleIcon className="w-5 h-5" />

@@ -98,12 +98,11 @@ export default function ExpertHome() {
           </div>
         </div>
 
-        {/* Main Content Grid */}
+        {/* Profile and Active Conversation Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Left Column - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6 text-purple">
-            {/* Profile Card */}
-            <div className="card">
+          {/* Profile Card - 2/3 width */}
+          <div className="lg:col-span-2">
+            <div className="card h-full flex flex-col">
               <div className="flex items-start space-x-4 mb-6">
                 <img
                   src={getAvatarUrl(expert.name)}
@@ -118,7 +117,7 @@ export default function ExpertHome() {
                 <span className="badge-primary">{expert.badge}</span>
               </div>
 
-              <div className="pt-6 border-t border-gray-200">
+              <div className="pt-6 border-t border-gray-200 flex-1">
                 <div className="section-label mb-3">Expertise Areas</div>
                 <div className="flex flex-wrap gap-2">
                   {expert.expertise.map((skill) => (
@@ -129,102 +128,85 @@ export default function ExpertHome() {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Library CTA */}
-            <div className="card bg-gradient-to-br from-purple/5 to-purple/10 border-purple/20">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
+          {/* Active Conversation - 1/3 width */}
+          {activeConversation && (
+            <div className="card border-green/30 bg-green/5 h-full flex flex-col">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green"></span>
+                  </span>
+                  <span className="badge-success text-xs">Active Conversation</span>
+                </div>
+              </div>
+
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                {activeConversation.topic}
+              </h3>
+
+              <div className="flex items-center space-x-4 mb-4 text-xs text-gray-600">
+                <span className="flex items-center space-x-1">
+                  <span className="material-symbols-outlined text-base">group</span>
+                  <span>{activeConversation.participants.length} participants</span>
+                </span>
+                <span className="flex items-center space-x-1">
+                  <span className="material-symbols-outlined text-base">chat</span>
+                  <span>{activeConversation.messages.length} messages</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-4 mt-auto">
+                <div className="flex items-center space-x-2">
+                  {activeConversation.participants.slice(0, 3).map((participant) => (
+                    <img
+                      key={participant.id}
+                      src={getAvatarUrl(participant.name)}
+                      alt={participant.name}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-white"
+                      title={participant.name}
+                    />
+                  ))}
+                </div>
+
+                <Link href="/conversations" className="btn-primary text-center flex-shrink-0 ml-auto">
+                  Continue Conversation →
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Library CTA and Ask Expert AI Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Library CTA - 2/3 width */}
+          <div className="lg:col-span-2">
+            <div className="card bg-gradient-to-br from-purple/5 to-purple/10 border-purple/20 h-full flex flex-col">
+              <div className="flex items-start justify-between flex-1">
+                <div className="flex-1 flex flex-col">
                   <div className="section-label text-purple mb-2">PEER INSIGHTS</div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-3">
                     Search 5,000+ Expert Transcripts
                   </h2>
-                  <p className="text-sm text-gray-600 mb-6">
+                  <p className="text-sm text-gray-600 mb-6 flex-1">
                     Access the collective knowledge of your peers. Real conversations about CRM migrations,
                     pricing strategies, and implementation challenges.
                   </p>
-                  <Link href="/library" className="btn-primary">
-                    Explore Library →
-                  </Link>
+                  <div>
+                    <Link href="/library" className="btn-primary">
+                      Explore Library →
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - 1/3 width */}
-          <div className="space-y-6">
-            {/* Active Conversation */}
-            {activeConversation && (
-              <div className="card border-green/30 bg-green/5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green"></span>
-                    </span>
-                    <span className="badge-success text-xs">Active Conversation</span>
-                  </div>
-                </div>
-
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  {activeConversation.topic}
-                </h3>
-
-                <div className="flex items-center space-x-4 mb-4 text-xs text-gray-600">
-                  <span className="flex items-center space-x-1">
-                    <span className="material-symbols-outlined text-base">group</span>
-                    <span>{activeConversation.participants.length} participants</span>
-                  </span>
-                  <span className="flex items-center space-x-1">
-                    <span className="material-symbols-outlined text-base">chat</span>
-                    <span>{activeConversation.messages.length} messages</span>
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center space-x-2">
-                    {activeConversation.participants.slice(0, 3).map((participant) => (
-                      <img
-                        key={participant.id}
-                        src={getAvatarUrl(participant.name)}
-                        alt={participant.name}
-                        className="w-8 h-8 rounded-full object-cover border-2 border-white"
-                        title={participant.name}
-                      />
-                    ))}
-                  </div>
-
-                  <Link href="/conversations" className="btn-primary text-center flex-shrink-0 ml-auto">
-                    Continue Conversation →
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* Ask Expert AI Widget */}
+          {/* Ask Expert AI Widget - 1/3 width */}
+          <div className="h-full">
             <AskExpertAIWidget />
-
-            {/* Coming Soon Card */}
-            <div className="card bg-gray-100 border-gray-300">
-              <div className="section-label mb-4">COMING SOON</div>
-              <ul className="space-y-3 text-sm text-gray-700">
-                <li className="flex items-start">
-                  <span className="text-gray-400 mr-2">•</span>
-                  <span>Expert call history & analytics</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-gray-400 mr-2">•</span>
-                  <span>Early access to research reports</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-gray-400 mr-2">•</span>
-                  <span>LinkedIn influencer opportunities</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-gray-400 mr-2">•</span>
-                  <span>Personal knowledge repository</span>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
 
