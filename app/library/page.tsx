@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import { Transcript, transcriptStorage, initializeSampleData } from '@/lib/storage';
 import TranscriptModal from '@/components/TranscriptModal';
@@ -70,7 +71,8 @@ function getUserProfile(name: string, role: string) {
   };
 }
 
-export default function TranscriptLibrary() {
+function TranscriptLibraryContent() {
+  const searchParams = useSearchParams();
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);
   const [filteredTranscripts, setFilteredTranscripts] = useState<Transcript[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -88,7 +90,18 @@ export default function TranscriptLibrary() {
     const allTranscripts = transcriptStorage.getAll();
     setTranscripts(allTranscripts);
     setFilteredTranscripts(allTranscripts);
-  }, []);
+
+    // Check if we should open a specific transcript from URL params
+    const transcriptId = searchParams.get('transcript');
+
+    if (transcriptId) {
+      const transcript = allTranscripts.find(t => t.id === transcriptId);
+      if (transcript) {
+        setSelectedTranscript(transcript);
+        setIsModalOpen(true);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -343,5 +356,23 @@ export default function TranscriptLibrary() {
         />
       </main>
     </div>
+  );
+}
+
+export default function TranscriptLibrary() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-purple rounded-lg mx-auto animate-pulse"></div>
+            <p className="mt-4 text-gray-600 text-sm">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <TranscriptLibraryContent />
+    </Suspense>
   );
 }

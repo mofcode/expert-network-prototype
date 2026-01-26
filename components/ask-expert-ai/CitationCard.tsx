@@ -60,7 +60,7 @@ export default function CitationCard({
 
   return (
     <Link
-      href={`/library?transcript=${transcriptId}`}
+      href={`/library/${transcriptId}`}
       className="block p-4 bg-white border border-gray-200 rounded-lg
                hover:bg-gray-50 transition-colors group"
     >

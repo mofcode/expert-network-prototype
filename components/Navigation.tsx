@@ -40,9 +40,11 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-lg bg-rorange flex items-center justify-center transition-transform group-hover:scale-105">
-              <span className="text-white font-bold text-lg">G2</span>
-            </div>
+            <img
+              src="/g2-logo.svg"
+              alt="G2 Logo"
+              className="h-8 w-auto transition-transform group-hover:scale-105"
+            />
             <div className="flex flex-col">
               <span className="text-lg font-semibold text-gray-900">Expert Network</span>
             </div>
