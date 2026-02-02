@@ -204,11 +204,11 @@ export default function Home() {
 
               <div className="flex items-center space-x-4 mb-4 text-xs text-gray-600">
                 <span className="flex items-center space-x-1">
-                  <span className="material-symbols-outlined text-base">group</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>group</span>
                   <span>{activeConversation.participants.length} participants</span>
                 </span>
                 <span className="flex items-center space-x-1">
-                  <span className="material-symbols-outlined text-base">chat</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>chat</span>
                   <span>{activeConversation.messages.length} messages</span>
                 </span>
               </div>
