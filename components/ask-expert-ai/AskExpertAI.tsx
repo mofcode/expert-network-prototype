@@ -340,6 +340,7 @@ export default function AskExpertAI({ initialQuery = '' }: AskExpertAIProps) {
   }
 
   const hasResults = matchedTranscripts.length > 0 && synthesis && status === 'complete';
+  const isLoading = status === 'searching' || status === 'synthesizing';
 
   return (
     <div className="space-y-6">
@@ -353,12 +354,12 @@ export default function AskExpertAI({ initialQuery = '' }: AskExpertAIProps) {
 
           <AISearchInput
             onSearch={handleSearch}
-            disabled={status === 'searching' || status === 'synthesizing'}
+            disabled={isLoading}
             initialValue={initialQuery}
           />
 
           {/* Status indicator */}
-          {(status === 'searching' || status === 'synthesizing') && (
+          {isLoading && (
             <div className="flex items-center gap-2 text-sm text-purple-600 mt-4">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>
@@ -417,13 +418,13 @@ export default function AskExpertAI({ initialQuery = '' }: AskExpertAIProps) {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                 <AISearchInput
                   onSearch={handleSearch}
-                  disabled={status === 'searching' || status === 'synthesizing'}
+                  disabled={isLoading}
                   placeholder="Ask a follow-up question..."
                   showExamples={false}
                 />
 
                 {/* Status indicator for follow-up */}
-                {(status === 'searching' || status === 'synthesizing') && (
+                {isLoading && (
                   <div className="flex items-center gap-2 text-sm text-purple-600 mt-4">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     <span>
@@ -433,7 +434,7 @@ export default function AskExpertAI({ initialQuery = '' }: AskExpertAIProps) {
                 )}
 
                 {/* Error message */}
-                {error && status === 'error' && (
+                {error && (
                   <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg mt-4">
                     <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
                     <p className="text-sm text-red-700">{error}</p>

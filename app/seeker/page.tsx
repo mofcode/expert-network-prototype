@@ -12,6 +12,41 @@ import BookExpertModal from '@/components/seeker/BookExpertModal';
 import TranscriptModal from '@/components/TranscriptModal';
 import UserProfileModal from '@/components/UserProfileModal';
 
+// Helper function to get avatar URL
+function getAvatarUrl(name: string): string {
+  const expertPhotos: Record<string, string> = {
+    'Sarah James': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face',
+    'Alex Rodriguez': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+    'Maria Santos': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
+    'James Kim': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
+  };
+
+  if (expertPhotos[name]) {
+    return expertPhotos[name];
+  }
+
+  const fallbackPhotos = [
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1557862921-37829c790f19?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
+  ];
+
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = ((hash << 5) - hash) + name.charCodeAt(i);
+    hash = hash & hash;
+  }
+  const index = Math.abs(hash) % fallbackPhotos.length;
+  return fallbackPhotos[index];
+}
+
 export default function SeekerHome() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -294,12 +329,12 @@ export default function SeekerHome() {
       </main>
 
       {/* Transcript Modal */}
-      {selectedTranscript && (
-        <TranscriptModal
-          transcript={selectedTranscript}
-          onClose={() => setSelectedTranscript(null)}
-        />
-      )}
+      <TranscriptModal
+        transcript={selectedTranscript}
+        isOpen={!!selectedTranscript}
+        onClose={() => setSelectedTranscript(null)}
+        getAvatarUrl={getAvatarUrl}
+      />
 
       {/* User Profile Modal */}
       {selectedExpertId && !showBookingModal && (
