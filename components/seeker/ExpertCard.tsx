@@ -60,11 +60,11 @@ export default function ExpertCard({
 
       <div className="flex items-center justify-between text-xs text-gray-600 mb-4 py-3 border-t border-gray-200">
         <div className="flex items-center space-x-1">
-          <span className="material-symbols-outlined text-base">description</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>description</span>
           <span>{stats.transcripts} transcripts</span>
         </div>
         <div className="flex items-center space-x-1">
-          <span className="material-symbols-outlined text-base">format_quote</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>format_quote</span>
           <span>{stats.citations} citations</span>
         </div>
       </div>
