@@ -291,11 +291,11 @@ export default function Home() {
 
                       <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
                         <div className="flex items-center space-x-1">
-                          <span className="material-symbols-outlined text-base">schedule</span>
+                          <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>schedule</span>
                           <span>{booking.duration} minutes</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span className="material-symbols-outlined text-base">payments</span>
+                          <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>payments</span>
                           <span>${booking.payment}</span>
                         </div>
                       </div>
