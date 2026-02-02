@@ -357,7 +357,7 @@ export default function Home() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="material-symbols-outlined text-xl text-gray-700">
+                      <span className="material-symbols-outlined text-gray-700" style={{ fontSize: '20px' }}>
                         {opp.type === 'call' ? 'phone' : opp.type === 'influencer' ? 'videocam' : 'assessment'}
                       </span>
                       <span className="badge-secondary">
