@@ -339,51 +339,110 @@ export default function AskExpertAI({ initialQuery = '' }: AskExpertAIProps) {
     );
   }
 
+  const hasResults = matchedTranscripts.length > 0 && synthesis && status === 'complete';
+
   return (
     <div className="space-y-6">
-      {/* Search Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center gap-1 mb-6">
-          <SparkleIcon className="w-6 h-6" />
-          <h3 className="text-lg font-semibold text-gray-900">Ask Expert AI</h3>
-        </div>
-
-        <AISearchInput
-          onSearch={handleSearch}
-          disabled={status === 'searching' || status === 'synthesizing'}
-          initialValue={initialQuery}
-        />
-
-        {/* Status indicator */}
-        {(status === 'searching' || status === 'synthesizing') && (
-          <div className="flex items-center gap-2 text-sm text-purple-600 mt-4">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>
-              {status === 'searching' ? 'Searching transcripts...' : (synthesisStage || 'Generating insights...')}
-            </span>
-          </div>
-        )}
-
-        {/* Error message */}
-        {error && status === 'error' && (
-          <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg mt-4">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Results Section */}
-      {matchedTranscripts.length > 0 && synthesis && status === 'complete' && (
+      {/* Show input at top only if no results yet */}
+      {!hasResults && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <AIResponsePanel
-            synthesis={synthesis}
-            matchedTranscripts={matchedTranscripts}
-            markerPosition={markerPosition}
-            onMarkerMove={handleMarkerMove}
-            nearbyTranscripts={nearbyTranscripts}
+          <div className="flex items-center gap-1 mb-6">
+            <SparkleIcon className="w-6 h-6" />
+            <h3 className="text-lg font-semibold text-gray-900">Ask Expert AI</h3>
+          </div>
+
+          <AISearchInput
+            onSearch={handleSearch}
+            disabled={status === 'searching' || status === 'synthesizing'}
+            initialValue={initialQuery}
           />
+
+          {/* Status indicator */}
+          {(status === 'searching' || status === 'synthesizing') && (
+            <div className="flex items-center gap-2 text-sm text-purple-600 mt-4">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>
+                {status === 'searching' ? 'Searching transcripts...' : (synthesisStage || 'Generating insights...')}
+              </span>
+            </div>
+          )}
+
+          {/* Error message */}
+          {error && status === 'error' && (
+            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg mt-4">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
         </div>
+      )}
+
+      {/* Results Section with sticky input at bottom */}
+      {hasResults && (
+        <>
+          {/* Scrollable content area with padding for sticky input */}
+          <div className="pb-32">
+            {/* Combined query and AI response container */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              {/* Expert AI label at top */}
+              <div className="flex items-center gap-2 mb-6">
+                <SparkleIcon className="w-6 h-6" />
+                <h3 className="text-lg font-semibold text-gray-900">Expert AI</h3>
+              </div>
+
+              {/* Show the original query */}
+              <div className="flex items-start gap-3 mb-6 pb-6 border-b border-gray-200">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-lg text-gray-600">person</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-base text-gray-900">{query}</p>
+                </div>
+              </div>
+
+              {/* AI Response */}
+              <AIResponsePanel
+                synthesis={synthesis}
+                matchedTranscripts={matchedTranscripts}
+                markerPosition={markerPosition}
+                onMarkerMove={handleMarkerMove}
+                nearbyTranscripts={nearbyTranscripts}
+              />
+            </div>
+          </div>
+
+          {/* Sticky follow-up input at bottom */}
+          <div className="fixed bottom-0 left-0 right-0 bg-gray-50 border-t border-gray-200 shadow-lg z-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <AISearchInput
+                  onSearch={handleSearch}
+                  disabled={status === 'searching' || status === 'synthesizing'}
+                  placeholder="Ask a follow-up question..."
+                  showExamples={false}
+                />
+
+                {/* Status indicator for follow-up */}
+                {(status === 'searching' || status === 'synthesizing') && (
+                  <div className="flex items-center gap-2 text-sm text-purple-600 mt-4">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>
+                      {status === 'searching' ? 'Searching transcripts...' : (synthesisStage || 'Generating insights...')}
+                    </span>
+                  </div>
+                )}
+
+                {/* Error message */}
+                {error && status === 'error' && (
+                  <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg mt-4">
+                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    <p className="text-sm text-red-700">{error}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

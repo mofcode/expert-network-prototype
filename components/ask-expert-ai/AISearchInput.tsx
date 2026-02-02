@@ -8,13 +8,15 @@ interface AISearchInputProps {
   disabled?: boolean;
   placeholder?: string;
   initialValue?: string;
+  showExamples?: boolean;
 }
 
 export default function AISearchInput({
   onSearch,
   disabled = false,
   placeholder = "Ask about expert insights...",
-  initialValue = ''
+  initialValue = '',
+  showExamples = true
 }: AISearchInputProps) {
   const [query, setQuery] = useState(initialValue);
 
@@ -41,9 +43,11 @@ export default function AISearchInput({
                    text-gray-900 placeholder-gray-500"
         />
       </div>
-      <p className="mt-2 text-xs text-gray-500">
-        Try: "CRM migration challenges" or "SaaS pricing strategies"
-      </p>
+      {showExamples && (
+        <p className="mt-2 text-xs text-gray-500">
+          Try: "CRM migration challenges" or "SaaS pricing strategies"
+        </p>
+      )}
     </form>
   );
 }

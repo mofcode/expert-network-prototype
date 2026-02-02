@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { userStorage, User } from '@/lib/storage';
+import ProfileSwitcher from './ProfileSwitcher';
 
 // Helper function to get real professional photos for experts
 function getAvatarUrl(name: string): string {
@@ -27,12 +30,58 @@ function getAvatarUrl(name: string): string {
 
 export default function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [showProfileSwitcher, setShowProfileSwitcher] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const currentUser = userStorage.getCurrent();
+    setUser(currentUser);
+  }, [pathname]); // Re-check user on pathname change
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowProfileSwitcher(false);
+      }
+    }
+
+    if (showProfileSwitcher) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showProfileSwitcher]);
+
+  const handleUserSwitch = (userId: string) => {
+    const users = userStorage.getAll();
+    const selectedUser = users.find(u => u.id === userId);
+    if (!selectedUser) return;
+
+    userStorage.setCurrent(selectedUser);
+    setUser(selectedUser);
+    setShowProfileSwitcher(false);
+
+    // Force full page reload to re-initialize with new user
+    window.location.href = '/';
+  };
 
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/library', label: 'Library' },
     { href: '/ask', label: 'Ask Expert AI' },
   ];
+
+  const getProfileBadge = () => {
+    if (!user) return 'Loading...';
+    if (user.activeProfileType === 'expert') {
+      return user.profiles.expert?.badge || 'Active Expert';
+    }
+    return user.profiles.seeker?.role || 'Member';
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -68,16 +117,37 @@ export default function Navigation() {
           </div>
 
           {/* User profile */}
-          <div className="hidden md:flex items-center space-x-3">
-            <div className="text-right">
-              <div className="text-sm font-medium text-gray-900">Sarah James</div>
-              <div className="text-xs text-gray-500">Active Expert</div>
-            </div>
-            <img
-              src={getAvatarUrl('Sarah James')}
-              alt="Sarah James"
-              className="w-9 h-9 rounded-lg object-cover"
-            />
+          <div className="hidden md:flex items-center relative" ref={dropdownRef}>
+            <button
+              onClick={() => setShowProfileSwitcher(!showProfileSwitcher)}
+              className="flex items-center space-x-3 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="text-right">
+                <div className="text-sm font-medium text-gray-900">{user?.name || 'Loading...'}</div>
+                <div className="text-xs text-gray-500">{getProfileBadge()}</div>
+              </div>
+              <img
+                src={user?.avatarUrl || getAvatarUrl('Default')}
+                alt={user?.name || 'User'}
+                className="w-9 h-9 rounded-lg object-cover"
+              />
+              <svg
+                className={`w-4 h-4 text-gray-400 transition-transform ${showProfileSwitcher ? 'rotate-180' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {showProfileSwitcher && user && (
+              <ProfileSwitcher
+                currentUser={user}
+                onSwitchUser={handleUserSwitch}
+                onClose={() => setShowProfileSwitcher(false)}
+              />
+            )}
           </div>
 
           {/* Mobile menu button */}

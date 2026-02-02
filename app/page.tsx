@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
-import { Expert, Opportunity, PeerConversation, expertStorage, opportunityStorage, conversationStorage, initializeSampleData } from '@/lib/storage';
+import { User, Expert, Opportunity, ExpertBooking, PeerConversation, userStorage, expertStorage, opportunityStorage, bookingStorage, conversationStorage, initializeSampleData } from '@/lib/storage';
 import Link from 'next/link';
 import AskExpertAIWidget from '@/components/AskExpertAIWidget';
 import OpportunityModal from '@/components/OpportunityModal';
@@ -29,25 +30,79 @@ function getAvatarUrl(name: string): string {
   return `https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face&seed=${seed}`;
 }
 
-export default function ExpertHome() {
+export default function Home() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [expert, setExpert] = useState<Expert | null>(null);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [bookings, setBookings] = useState<ExpertBooking[]>([]);
   const [activeConversation, setActiveConversation] = useState<PeerConversation | null>(null);
   const [mounted, setMounted] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     initializeSampleData();
-    setExpert(expertStorage.getCurrent());
+
+    // Check user profile and route accordingly
+    const currentUser = userStorage.getCurrent();
+    setUser(currentUser);
+
+    if (currentUser?.activeProfileType === 'seeker') {
+      // Redirect to seeker home
+      router.replace('/seeker');
+      return;
+    }
+
+    // Load expert data
+    const currentExpert = expertStorage.getCurrent();
+    setExpert(currentExpert);
     setOpportunities(opportunityStorage.getPending());
+
+    // Get bookings for this expert
+    if (currentExpert) {
+      const expertBookings = bookingStorage.getByExpertId(currentExpert.id);
+      const pendingBookings = expertBookings.filter(b => b.status === 'requested');
+      setBookings(pendingBookings);
+    }
 
     // Get active conversation
     const conversations = conversationStorage.getAll();
     const active = conversations.find(c => c.status === 'active');
     setActiveConversation(active || null);
-  }, []);
+
+    setMounted(true);
+  }, [router]);
+
+  const handleAcceptBooking = (bookingId: string, selectedTime: string) => {
+    const allBookings = bookingStorage.getAll();
+    const updatedBookings = allBookings.map(b => {
+      if (b.id === bookingId) {
+        return { ...b, status: 'confirmed' as const, selectedTime };
+      }
+      return b;
+    });
+    bookingStorage.setAll(updatedBookings);
+
+    // Update local state
+    const expertBookings = updatedBookings.filter(b => b.expertId === expert?.id && b.status === 'requested');
+    setBookings(expertBookings);
+  };
+
+  const handleDeclineBooking = (bookingId: string) => {
+    const allBookings = bookingStorage.getAll();
+    const updatedBookings = allBookings.map(b => {
+      if (b.id === bookingId) {
+        return { ...b, status: 'cancelled' as const };
+      }
+      return b;
+    });
+    bookingStorage.setAll(updatedBookings);
+
+    // Update local state
+    const expertBookings = updatedBookings.filter(b => b.expertId === expert?.id && b.status === 'requested');
+    setBookings(expertBookings);
+  };
 
   if (!mounted || !expert) {
     return (
@@ -210,6 +265,83 @@ export default function ExpertHome() {
           </div>
         </div>
 
+        {/* Booking Requests */}
+        {bookings.length > 0 && (
+          <div className="card mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Booking Requests</h2>
+                <p className="text-sm text-gray-600 mt-1">{bookings.length} pending {bookings.length === 1 ? 'request' : 'requests'}</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {bookings.map((booking) => (
+                <div key={booking.id} className="border border-gray-200 rounded-xl p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="badge-warning">Booking Request</span>
+                        {booking.seekerName && (
+                          <span className="text-sm text-gray-600">from {booking.seekerName}</span>
+                        )}
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{booking.topic}</h3>
+                      <p className="text-sm text-gray-600 mb-3">{booking.description}</p>
+
+                      <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+                        <div className="flex items-center space-x-1">
+                          <span className="material-symbols-outlined text-base">schedule</span>
+                          <span>{booking.duration} minutes</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="material-symbols-outlined text-base">payments</span>
+                          <span>${booking.payment}</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="text-xs font-medium text-gray-700 mb-2">PROPOSED TIMES:</div>
+                        <div className="space-y-2">
+                          {booking.proposedTimes.map((time, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleAcceptBooking(booking.id, time)}
+                              className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-green hover:bg-green/5 transition-colors text-sm"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-gray-900">
+                                  {new Date(time).toLocaleString('en-US', {
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: '2-digit',
+                                  })}
+                                </span>
+                                <span className="text-green text-xs">Click to accept</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-4 border-t border-gray-200 justify-end">
+                    <button
+                      onClick={() => handleDeclineBooking(booking.id)}
+                      className="btn-secondary text-sm"
+                    >
+                      Decline Booking
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Opportunities - Full Width */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
@@ -234,6 +366,23 @@ export default function ExpertHome() {
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 mb-1">{opp.title}</h3>
                     <p className="text-sm text-gray-600 mb-2">{opp.description}</p>
+                    {opp.postedBy && opp.seekerName && (() => {
+                      const seeker = userStorage.getById(opp.postedBy);
+                      return (
+                        <div className="flex items-center space-x-2 mb-2">
+                          {seeker && (
+                            <img
+                              src={seeker.avatarUrl}
+                              alt={opp.seekerName}
+                              className="w-5 h-5 rounded-full object-cover"
+                            />
+                          )}
+                          <span className="text-xs text-gray-600">
+                            from {opp.seekerName}
+                          </span>
+                        </div>
+                      );
+                    })()}
                     {opp.dueDate && (
                       <p className="text-xs text-gray-500">
                         Due: {new Date(opp.dueDate).toLocaleDateString()}
@@ -241,6 +390,9 @@ export default function ExpertHome() {
                     )}
                   </div>
                   <div className="text-right ml-4">
+                    <div className="text-lg font-bold text-gray-900 mb-2">
+                      ${opp.payment}
+                    </div>
                     <button
                       onClick={() => {
                         setSelectedOpportunity(opp);
