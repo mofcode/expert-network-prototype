@@ -312,15 +312,15 @@ function TranscriptLibraryContent() {
                 <div className="pt-3 border-t border-gray-200 flex items-center justify-between text-xs text-gray-600">
                   <div className="flex items-center space-x-4">
                     <span className="flex items-center space-x-1">
-                      <span className="material-symbols-outlined text-base">thumb_up</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>thumb_up</span>
                       <span className="font-medium">{transcript.upvotes}</span>
                     </span>
                     <span className="flex items-center space-x-1">
-                      <span className="material-symbols-outlined text-base">description</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>description</span>
                       <span className="font-medium">{transcript.citations}</span>
                     </span>
                     <span className="flex items-center space-x-1">
-                      <span className="material-symbols-outlined text-base">schedule</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>schedule</span>
                       <span>{transcript.duration}</span>
                     </span>
                   </div>
