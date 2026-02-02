@@ -302,8 +302,8 @@ function TranscriptLibraryContent() {
                 </p>
 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {transcript.tags.slice(0, 3).map((tag) => (
-                    <span key={tag} className="badge-outline text-xs">
+                  {transcript.tags.slice(0, 3).map((tag, tagIndex) => (
+                    <span key={`${transcript.id}-${tag}-${tagIndex}`} className="badge-outline text-xs">
                       {tag}
                     </span>
                   ))}
