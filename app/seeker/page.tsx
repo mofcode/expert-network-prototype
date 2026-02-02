@@ -314,11 +314,11 @@ export default function SeekerHome() {
                 </p>
                 <div className="flex items-center space-x-4 text-xs text-gray-500">
                   <div className="flex items-center space-x-1">
-                    <span className="material-symbols-outlined text-base">thumb_up</span>
+                    <span className="material-symbols-outlined text-sm">thumb_up</span>
                     <span>{transcript.upvotes}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span className="material-symbols-outlined text-base">format_quote</span>
+                    <span className="material-symbols-outlined text-sm">format_quote</span>
                     <span>{transcript.citations}</span>
                   </div>
                 </div>
